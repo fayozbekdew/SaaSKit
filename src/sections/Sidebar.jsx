@@ -12,11 +12,15 @@ import { useState, useEffect } from "react";
 
 function Sidebar() {
   const [activePage, setActivePage] = useState(localStorage.getItem("active"));
+  const [toggle, setToggle] = useState(
+    !!localStorage.getItem("toggle") || false
+  );
   const { pathname } = useLocation();
   const navigate = useNavigate();
   function activeChecker() {
     if (!activePage) {
       localStorage.setItem("active", "/");
+      setActivePage("/");
     } else if (pathname != activePage) {
       navigate(activePage);
     }
@@ -28,29 +32,41 @@ function Sidebar() {
       navigate(path);
     }
   }
+  function toggleChecker() {
+    setToggle((prev) => !prev);
+    localStorage.setItem("toggle", toggle);
+  }
   useEffect(() => {
     activeChecker();
   }, []);
 
   return (
-    <div className="w-full max-w-[256px] sidebar-shadow flex flex-col gap-y-6 pt-6">
+    <div
+      className={`${
+        toggle ? "max-w-[68px] " : "max-w-[256px]"
+      } w-full  sidebar-shadow flex flex-col gap-y-6 pt-6`}
+    >
       <div
         onClick={() => activePageAdd("/")}
-        className="text-accentBlue font-semibold text-[18px] pl-5 cursor-pointer"
+        className={`${
+          toggle ? "pl-2" : "pl-5"
+        } text-accentBlue font-semibold text-[18px]  cursor-pointer`}
       >
-        SaaS Kit
+        SaaS
       </div>
       <hr className="text-lightGray" />
-      <span className="pl-5 flex gap-x-3">
+      <span className={`${toggle ? "pl-2" : "pl-5"}  flex gap-x-3`}>
         <img
           src={UserImage}
           className="rounded-full w-12 h-12"
           alt="user image"
         />
-        <small>
-          <h3 className="font-semibold text-[16px]">Sierra Ferguson</h3>
-          <p className="text-gray">s.ferguson@gmail.com</p>
-        </small>
+        {!toggle && (
+          <small>
+            <h3 className="font-semibold text-[16px]">Sierra Ferguson</h3>
+            <p className="text-gray">s.ferguson@gmail.com</p>
+          </small>
+        )}
       </span>
       <ul className="pl-5 flex flex-col gap-y-4">
         {navbarPath.map((nav) => (
@@ -66,7 +82,22 @@ function Sidebar() {
               />
               {nav.children ? (
                 <>
-                  <p
+                  {!toggle && (
+                    <p
+                      className={`${
+                        nav.href == activePage
+                          ? "text-accentBlue"
+                          : "text-darkText"
+                      } text-[17px] font-semibold`}
+                    >
+                      {nav.title}
+                    </p>
+                  )}
+                </>
+              ) : (
+                !toggle && (
+                  <Link
+                    to={nav.href}
                     className={`${
                       nav.href == activePage
                         ? "text-accentBlue"
@@ -74,32 +105,22 @@ function Sidebar() {
                     } text-[17px] font-semibold`}
                   >
                     {nav.title}
-                  </p>
-                </>
-              ) : (
-                <Link
-                  to={nav.href}
-                  className={`${
-                    nav.href == activePage ? "text-accentBlue" : "text-darkText"
-                  } text-[17px] font-semibold`}
-                >
-                  {nav.title}
-                </Link>
+                  </Link>
+                )
               )}
             </li>
-            <ul>
+            <ul className={`${toggle ? "flex flex-col gap-y-2 mt-1" : ""}`}>
               {nav?.children?.map((inner) => (
-                <li
+                <Link
+                  to={inner.href}
                   key={inner.href}
-                  className={`${
-                    activePage == nav.href ? "flex" : "hidden"
-                  } gap-x-2 items-center ml-7 hover:text-accentBlue`}
+                  className={`${activePage == nav.href ? "flex" : "hidden"} ${
+                    toggle ? "ml-2" : "ml-7"
+                  } gap-x-2 items-center  hover:text-accentBlue`}
                 >
                   <img src={inner.icon} className="w-3 h-3" alt="inner icon" />
-                  <Link className={`text-[15px]`} to={inner.href}>
-                    {inner.title}
-                  </Link>
-                </li>
+                  {!toggle && <p className={`text-[15px]`}>{inner.title}</p>}
+                </Link>
               ))}
             </ul>
           </small>
@@ -114,18 +135,27 @@ function Sidebar() {
           src={activePage == "/settings" ? SettingsActiveIcon : SettingsIcon}
           alt="settings"
         />
-        <Link
-          className={`${
-            activePage == "/settings" ? "text-accentBlue" : "text-darkText"
-          } font-semibold`}
-          to="#"
-        >
-          Settings
-        </Link>
+        {!toggle && (
+          <Link
+            className={`${
+              activePage == "/settings" ? "text-accentBlue" : "text-darkText"
+            } font-semibold`}
+            to="#"
+          >
+            Settings
+          </Link>
+        )}
       </span>
-      <button className="flex mt-auto mb-6 gap-2 pl-5 items-center">
-        <img src={ToggleIcon} alt="togele icons" />
-        <p>Toggle sidebar</p>
+      <button
+        onClick={() => toggleChecker()}
+        className="flex mt-auto mb-6 gap-2 pl-5 items-center"
+      >
+        <img
+          className={`${toggle ? "w-5 h-5" : ""}`}
+          src={ToggleIcon}
+          alt="togele icons"
+        />
+        {!toggle && <p>Toggle sidebar</p>}
       </button>
     </div>
   );

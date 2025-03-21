@@ -22,3 +22,4 @@ export { default as ScheduleCircle } from "./schedule_circle.svg";
 export { default as ToggleIcon } from "./toggle.png";
 export { default as ToggleActiveIcon } from "./toggle-active.svg";
 export { default as DeleteIcon } from "./deleteIcon.svg";
+export { default as EditIcon } from "./edit.svg";

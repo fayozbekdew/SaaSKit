@@ -1,8 +1,10 @@
+import { lazy } from "react";
 import MainLayout from "./layout/MainLayout";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
-import Contact from "./pages/Contact";
-import OtherPage from "./pages/OtherPage";
+const Contact = lazy(() => import("./pages/Contact"));
+const OtherPage = lazy(() => import("./pages/OtherPage"));
+
 function App() {
   const router = createBrowserRouter([
     {

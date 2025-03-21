@@ -15,7 +15,7 @@ function Navbar() {
         src={SearchIcon}
         alt="search icon"
       />
-      <span className="absolute right-10 top-[50%] translate-y-[-50%]">
+      <span className="absolute right-10 top-[50%] translate-y-[-50%] cursor-pointer">
         <small className="flex items-start justify-end">
           <img
             className="w-6 h-6"

@@ -1,8 +1,9 @@
 import React from "react";
 
-function PrimaryButton({ title, disabled }) {
+function PrimaryButton({ title, disabled, action }) {
   return (
     <button
+      onClick={() => action()}
       className={`${
         disabled
           ? "read-only: cursor-not-allowed bg-iconGray hover:bg-iconGray"
