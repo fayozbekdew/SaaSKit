@@ -6,19 +6,39 @@ import { useState } from "react";
 import Modal from "../components/Modal";
 import TextInput from "../components/TextInput";
 import { ContactDefault } from "../constants/common";
+import { addToDB, deleteFromDB, getFromDB } from "../db";
+import { useEffect } from "react";
 
 function Contact() {
   const [open, setOpen] = useState(false);
-  const [company, setCompany] = useState(ContactDefault);
+  const [company, setCompany] = useState([]);
   function openModal() {
     setOpen(true);
   }
+
   function filterContact(company) {
     if (company == "All") {
-      setCompany(ContactDefault);
+      getFromDB("contacts").then(setCompany);
     } else {
-      setCompany(ContactDefault.filter((com) => com.company == company));
+      getFromDB("contacts").then((data) =>
+        setCompany(data.filter((com) => com.company == company))
+      );
     }
+  }
+  function handleSumbit(newEl) {
+    addToDB("contacts", newEl);
+    getFromDB("contacts").then(setCompany);
+  }
+  useEffect(() => {
+    getFromDB("contacts").then(setCompany);
+  }, []);
+  function deleteContact(id) {
+    if (id.length > 1) {
+      id.forEach((el) => deleteFromDB("contacts", el));
+    } else if (id.length == 1) {
+      deleteFromDB("contacts", id[0]);
+    }
+    getFromDB("contacts").then(setCompany);
   }
   return (
     <div>
@@ -27,24 +47,13 @@ function Contact() {
           <p>Company:</p>
           <Select
             action={filterContact}
-            options={[
-              "All",
-              "Udemy",
-              "Coursera",
-              "Pluralsight",
-              "Udemy",
-              "Coursera",
-              "Pluralsight",
-              "Udemy",
-              "Coursera",
-              "Pluralsight",
-              "Udemy",
-            ]}
+            options={["All", "Udemy", "Coursera", "Pluralsight"]}
           />
         </small>
         <PrimaryButton action={openModal} title="Add contact" />
       </span>
       <Table
+        action={deleteContact}
         thead={[
           "Name",
           "Email",
@@ -56,20 +65,42 @@ function Contact() {
         tbody={company}
       />
       {open && (
-        <Modal setOpen={setOpen}>
+        <Modal action={handleSumbit} setOpen={setOpen}>
           <div className="flex flex-col gap-y-2">
-            <TextInput label={"Full name"} placeholder={"John Doe"} />
-            <TextInput label={"Email"} placeholder={"johndoe@gmail.com"} />
+            <TextInput
+              name="fullname"
+              label={"Full name"}
+              placeholder={"John Doe"}
+            />
+            <TextInput
+              name={"email"}
+              label={"Email"}
+              placeholder={"johndoe@gmail.com"}
+            />
             <div className="w-full flex flex-col border-b-2 border-iconGray pb-1 gap-y-1">
               <p>Role</p>
-              <Select options={["Chef", "Admin", "Teacher", "Developer"]} />
+              <Select
+                name={"role"}
+                options={["Chef", "Admin", "Teacher", "Developer"]}
+              />
             </div>
             <div className="w-full flex flex-col border-b-2 border-iconGray pb-1 gap-y-1">
               <p>Company</p>
-              <Select options={["Udemy", "Google", "Upwork", "Slack"]} />
+              <Select
+                name={"company"}
+                options={["Udemy", "Coursera", "Pluralsight"]}
+              />
             </div>
-            <TextInput label={"Forecast"} placeholder={"50%"} />
-            <TextInput label={"Activity"} placeholder={"10 min ago"} />
+            <TextInput
+              name={"forecast"}
+              label={"Forecast"}
+              placeholder={"50%"}
+            />
+            <TextInput
+              name={"activity"}
+              label={"Activity"}
+              placeholder={"10 min ago"}
+            />
           </div>
         </Modal>
       )}

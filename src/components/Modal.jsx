@@ -1,15 +1,23 @@
-import { useState } from "react";
+import { useRef } from "react";
 
-export default function Modal({ setOpen, children }) {
+export default function Modal({ setOpen, action = () => {}, children }) {
+  const formRef = useRef();
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+      <form
+        ref={formRef}
+        onSubmit={(e) => {
+          e.preventDefault();
+          const formData = new FormData(formRef.current);
+          const data = Object.fromEntries(formData);
+          action(data);
+          setOpen(false)
+        }}
+        className="bg-white p-6 rounded-lg shadow-lg w-96"
+      >
         {children}
         <div className="flex gap-x-2 justify-end mt-3">
-          <button
-            onClick={() => setOpen(false)}
-            className="px-4 py-2 bg-green text-white rounded-md "
-          >
+          <button className="px-4 py-2 bg-green text-white rounded-md ">
             Save
           </button>
           <button
@@ -19,7 +27,7 @@ export default function Modal({ setOpen, children }) {
             Close
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 }

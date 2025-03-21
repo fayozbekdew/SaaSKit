@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { DeleteIcon } from "../assets";
 
-function Table({ thead, tbody }) {
+function Table({ thead, tbody, action }) {
   const [checkedUserHash, setCheckedUserHash] = useState(new Map());
   function checkerUser(id) {
     setCheckedUserHash((prevCheckedUsers) => {
@@ -49,9 +49,10 @@ function Table({ thead, tbody }) {
                     {checkedUserHash.size} selected
                   </p>
                   <img
+                    onClick={() => action([...checkedUserHash.keys()])}
                     className="w-4 h-4 cursor-pointer"
                     src={DeleteIcon}
-                    alt=""
+                    alt="delete icon"
                   />
                 </th>
               )}
@@ -73,19 +74,25 @@ function Table({ thead, tbody }) {
                     className="accent-blue-500"
                   />
                 </td>
-                <td className="py-3 px-6 flex text-darkText font-semibold items-center gap-2">
-                  <img
-                    src={`https://i.pravatar.cc/40?img=${index}`}
-                    alt={user.name}
-                    className="w-8 h-8 rounded-full"
-                  />
-                  {user.name}
-                </td>
-                <td className="py-3 px-6">{user.email}</td>
-                <td className="py-3 px-6">{user.company}</td>
+
+                {Object.entries(user).map(([key, value], index) =>
+                  key == "id" ? null : key !== "fullname" ? (
+                    <td className="py-3 px-6">{value}</td>
+                  ) : (
+                    <td className="py-3 px-6 flex text-darkText font-semibold items-center gap-2">
+                      <img
+                        src={`https://i.pravatar.cc/40?img=2`}
+                        alt={user.fullname}
+                        className="w-8 h-8 rounded-full"
+                      />
+                      {user.fullname}
+                    </td>
+                  )
+                )}
+                {/* <td className="py-3 px-6">{user.company}</td>
                 <td className="py-3 px-6">{user.role}</td>
                 <td className="py-3 px-6">{user.forecast}</td>
-                <td className="py-3 px-6">{user.activity}</td>
+                <td className="py-3 px-6">{user.activity}</td> */}
               </tr>
             ))}
           </tbody>
